@@ -50,8 +50,11 @@ describe('2 - Crie um filtro de texto para a tabela', () => {
 
     userEvent.type(inputText, 'oo')
 
-    expect(screen.getByRole('cell', { name: /Naboo/i })).toBeInTheDocument;
-    expect(screen.getByRole('cell', { name: /Tatooine/i })).toBeInTheDocument;
+    const planetNaboo = screen.getByRole('cell', { name: /Naboo/i });
+    const planetTatooine = screen.getByRole('cell', { name: /Tatooine/i });
+
+    expect(planetNaboo).toBeInTheDocument;
+    expect(planetTatooine).toBeInTheDocument;
   });
 
   test('Testa se ao digitar tatoo é filtrado o planeta Tatooine', () => {
@@ -60,7 +63,9 @@ describe('2 - Crie um filtro de texto para a tabela', () => {
 
     userEvent.type(inputText, 'taoo')
 
-    expect(screen.getByRole('cell', { name: /Tatooine/i })).toBeInTheDocument;
+    const planetTatooine = screen.getByRole('cell', { name: /Tatooine/i });
+
+    expect(planetTatooine).toBeInTheDocument;
   });
 
   test('Realiza os dois filtros acima em sequência e após, testa a remoção do filtro por texto', () => {
@@ -69,8 +74,11 @@ describe('2 - Crie um filtro de texto para a tabela', () => {
 
     userEvent.type(inputText, 'oo')
 
-    expect(screen.getByRole('cell', { name: /Naboo/i })).toBeInTheDocument;
-    expect(screen.getByRole('cell', { name: /Tatooine/i })).toBeInTheDocument;
+    const planetNaboo = screen.getByRole('cell', { name: /Naboo/i });
+    const planetTatooine = screen.getByRole('cell', { name: /Tatooine/i });
+
+    expect(planetNaboo).toBeInTheDocument;
+    expect(planetTatooine).toBeInTheDocument;
 
     userEvent.type(inputText, '{backspace}');
 
