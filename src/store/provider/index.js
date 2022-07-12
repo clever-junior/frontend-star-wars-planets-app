@@ -4,18 +4,41 @@ import AppContext from '../context';
 import fetchPlanets from '../../services/api';
 
 export default function Provider({ children }) {
-  const [apiData, setApiData] = useState([]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     async function getApiData() {
-      const data = await fetchPlanets();
-      setApiData(data.results);
+      const apiData = await fetchPlanets();
+      const dataResults = apiData.results;
+
+      dataResults.forEach((planet) => delete planet.residents);
+
+      console.log(dataResults);
+      setData(dataResults);
     }
     getApiData();
   }, []);
 
+  const headers = [
+    'Name',
+    'Rotation Period',
+    'Orbital Period',
+    'Diameter',
+    'Climate',
+    'Gravity',
+    'Terrain',
+    'Surface Water',
+    'Population',
+    'Films',
+    'Created',
+    'Edited',
+    'URL',
+  ];
+
   const contextValue = {
-    apiData,
+    data,
+    setData,
+    table: { headers },
   };
 
   return (
@@ -26,5 +49,7 @@ export default function Provider({ children }) {
 }
 
 Provider.propTypes = {
-  children: PropTypes.node.isRequired,
+  children: PropTypes.arrayOf(
+    PropTypes.shape(),
+  ).isRequired,
 };
