@@ -5,6 +5,7 @@ import fetchPlanets from '../../services/api';
 
 export default function Provider({ children }) {
   const [data, setData] = useState([]);
+  const [name, setName] = useState('');
 
   useEffect(() => {
     async function getApiData() {
@@ -13,7 +14,6 @@ export default function Provider({ children }) {
 
       dataResults.forEach((planet) => delete planet.residents);
 
-      console.log(dataResults);
       setData(dataResults);
     }
     getApiData();
@@ -39,6 +39,12 @@ export default function Provider({ children }) {
     data,
     setData,
     table: { headers },
+    filters: {
+      filterByName: {
+        name,
+        setName,
+      },
+    },
   };
 
   return (
