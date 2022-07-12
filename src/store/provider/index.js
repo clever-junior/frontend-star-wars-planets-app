@@ -37,7 +37,6 @@ export default function Provider({ children }) {
 
   const contextValue = {
     data,
-    setData,
     table: { headers },
     filters: {
       filterByName: {
