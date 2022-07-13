@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, act } from '@testing-library/react';
 import App from '../App';
 import { response as mockData } from './mocks/mockData';
 import userEvent from '@testing-library/user-event';
@@ -14,54 +14,49 @@ const mockFetch = () => {
 }
 
 describe('2 - Crie um filtro de texto para a tabela', () => {
-  beforeEach(mockFetch);
+  beforeEach(async () => {
+    mockFetch();
+
+    await act(async () =>{
+    render(<App />)
+    } )
+  });
+
   afterEach(() => jest.clearAllMocks());
 
-  test('Testa se existe um campo de texto', () => {
-    render(<App />);
 
+  test('Testa se existe um campo de texto', () => {
     const inputText = screen.getByTestId('name-filter');
 
     expect(inputText).toBeInTheDocument();
   });
 
   test('Testa se são filtrados os planetas que possuem a letra "o" no nome', () => {
-    render(<App />);
     const inputText = screen.getByTestId('name-filter');
 
     userEvent.type(inputText, 'o')
 
-    const planets = mockData.filter((planet) => planet.name.includes('o'));
+    const planets = mockData.results.filter((planet) => planet.name.includes('o'));
 
-    planets.forEach((planet) => expect(screen.getByRole('cell', /`${planet}`/i)).toBeInTheDocument());
-
-    /* expect(screen.getByRole('cell', { name: /coruscant/i })).toBeInTheDocument;
-    expect(screen.getByRole('cell', { name: /Dagobah/i })).toBeInTheDocument;
-    expect(screen.getByRole('cell', { name: /Endor/i })).toBeInTheDocument;
-    expect(screen.getByRole('cell', { name: /Hoth/i })).toBeInTheDocument;
-    expect(screen.getByRole('cell', { name: /Kamino/i })).toBeInTheDocument;
-    expect(screen.getByRole('cell', { name: /Naboo/i })).toBeInTheDocument;
-    expect(screen.getByRole('cell', { name: /Tatooine/i })).toBeInTheDocument; */
+    planets.forEach((planet) => expect(screen.getByRole('cell', planet)).toBeInTheDocument());
   });
 
   test('Testa se são filtrados os planetas que possuem a letra "oo" no nome', () => {
-    render(<App />);
     const inputText = screen.getByTestId('name-filter');
 
     userEvent.type(inputText, 'oo')
 
-    const planetNaboo = screen.getByRole('cell', { name: /Naboo/i });
-    const planetTatooine = screen.getByRole('cell', { name: /Tatooine/i });
+    const planetNaboo = screen.getByRole('cell', { name: /naboo/i });
+    const planetTatooine = screen.getByRole('cell', { name: /tatooine/i });
 
     expect(planetNaboo).toBeInTheDocument;
     expect(planetTatooine).toBeInTheDocument;
   });
 
   test('Testa se ao digitar tatoo é filtrado o planeta Tatooine', () => {
-    render(<App />);
     const inputText = screen.getByTestId('name-filter');
 
-    userEvent.type(inputText, 'taoo')
+    userEvent.type(inputText, 'Tatoo')
 
     const planetTatooine = screen.getByRole('cell', { name: /Tatooine/i });
 
@@ -69,7 +64,6 @@ describe('2 - Crie um filtro de texto para a tabela', () => {
   });
 
   test('Realiza os dois filtros acima em sequência e após, testa a remoção do filtro por texto', () => {
-    render(<App />);
     const inputText = screen.getByTestId('name-filter');
 
     userEvent.type(inputText, 'oo')
@@ -82,9 +76,9 @@ describe('2 - Crie um filtro de texto para a tabela', () => {
 
     userEvent.type(inputText, '{backspace}');
 
-    const planets = mockData.filter((planet) => planet.name.includes('o'));
+    const planets = mockData.results.filter((planet) => planet.name.includes('o'));
 
-    planets.forEach((planet) => expect(screen.getByRole('cell', /`${planet}`/i)).toBeInTheDocument());
+    planets.forEach((planet) => expect(screen.getByRole('cell', planet)).toBeInTheDocument());
 
     userEvent.type(inputText, '{backspace}');
 
