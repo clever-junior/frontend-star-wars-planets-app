@@ -7,8 +7,6 @@ import userEvent from '@testing-library/user-event';
 const mockFetch = () => {
   jest.spyOn(global, 'fetch')
     .mockImplementation(() => Promise.resolve({
-      status: 200,
-      ok: true,
       json: () => Promise.resolve(mockData),
     }));
 }
@@ -23,7 +21,6 @@ describe('2 - Crie um filtro de texto para a tabela', () => {
   });
 
   afterEach(() => jest.clearAllMocks());
-
 
   test('Testa se existe um campo de texto', () => {
     const inputText = screen.getByTestId('name-filter');
