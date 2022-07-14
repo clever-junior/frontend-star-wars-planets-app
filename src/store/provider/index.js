@@ -6,6 +6,10 @@ import fetchPlanets from '../../services/api';
 export default function Provider({ children }) {
   const [data, setData] = useState([]);
   const [name, setName] = useState('');
+  const [column, setColumn] = useState('population');
+  const [comparison, setComparison] = useState('maior que');
+  const [value, setValue] = useState(0);
+  const [applyNumericFilter, setApplyNumericFilter] = useState(false);
 
   useEffect(() => {
     async function getApiData() {
@@ -19,30 +23,28 @@ export default function Provider({ children }) {
     getApiData();
   }, []);
 
-  const headers = [
-    'Name',
-    'Rotation Period',
-    'Orbital Period',
-    'Diameter',
-    'Climate',
-    'Gravity',
-    'Terrain',
-    'Surface Water',
-    'Population',
-    'Films',
-    'Created',
-    'Edited',
-    'URL',
-  ];
+  const onFilterBtnClick = () => setApplyNumericFilter(!applyNumericFilter);
 
   const contextValue = {
     data,
-    table: { headers },
     filters: {
       filterByName: {
         name,
         setName,
       },
+      filterByNumericValues: [
+        {
+          column,
+          setColumn,
+          comparison,
+          setComparison,
+          value,
+          setValue,
+        },
+      ],
+      applyNumericFilter,
+      setApplyNumericFilter,
+      onFilterBtnClick,
     },
   };
 

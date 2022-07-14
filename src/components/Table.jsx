@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { headers } from '../helpers/constants';
 import AppContext from '../store/context';
 
 export default function Table() {
@@ -6,9 +7,15 @@ export default function Table() {
 
   const {
     data,
-    table: { headers },
-    filters: { filterByName: { name } },
+    filters: {
+      filterByName: { name },
+      filterByNumericValues: numericValues,
+      applyNumericFilter,
+      setApplyNumericFilter,
+    },
   } = useContext(AppContext);
+
+  const { column, comparison, value } = numericValues[0];
 
   useEffect(() => {
     function filterByName() {
@@ -20,7 +27,34 @@ export default function Table() {
       }
     }
     filterByName();
-  }, [name, data, setPlanets]);
+  }, [name, data]);
+
+  useEffect(() => {
+    function filterByNumericValues() {
+      switch (comparison) {
+      case 'maior que': {
+        const result = data
+          .filter((planet) => +planet[column] > value);
+        setPlanets(result);
+        setApplyNumericFilter(false);
+      } break;
+      case 'menor que': {
+        const result = data
+          .filter((planet) => +planet[column] < value);
+        setPlanets(result);
+        setApplyNumericFilter(false);
+      } break;
+      case 'igual a': {
+        const result = data
+          .filter((planet) => planet[column] === value);
+        setPlanets(result);
+        setApplyNumericFilter(false);
+      } break;
+      default: break;
+      }
+    }
+    if (applyNumericFilter) filterByNumericValues();
+  }, [column, value, comparison, data, applyNumericFilter, setApplyNumericFilter]);
 
   return (
     <table style={ { border: '2px solid black' } }>
@@ -36,11 +70,18 @@ export default function Table() {
         </tr>
       </thead>
       <tbody>
-        {planets.length && planets
-          .map((planet) => (
-            <tr key={ planet.name }>
-              {Object.values(planet).map((value, i) => <td key={ i }>{value}</td>)}
-            </tr>))}
+        {
+          planets.length && planets
+            .map((planet) => (
+              <tr key={ planet.name }>
+                {
+                  Object.values(planet)
+                    .map((planetValue, index) => (
+                      <td key={ `planetValue=${index}` }>{planetValue}</td>
+                    ))
+                }
+              </tr>))
+        }
       </tbody>
     </table>
   );
