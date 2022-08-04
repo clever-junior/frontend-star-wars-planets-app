@@ -1,60 +1,71 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { headers } from '../helpers/constants';
+import { headers, operators } from '../helpers/constants';
+import { applyNumericFilterAction } from '../store/actions';
 import AppContext from '../store/context';
 
 export default function Table() {
   const [planets, setPlanets] = useState([]);
-
   const {
     data,
-    filters: {
-      filterByName: { name },
-      filterByNumericValues: numericValues,
-      applyNumericFilter,
-      setApplyNumericFilter,
-    },
+    state,
+    resetFilters,
+    setters: { dispatch, setResetFilters },
+    filterByName: { name },
   } = useContext(AppContext);
 
-  const { column, comparison, value } = numericValues[0];
+  const { applyNumericFilter, filterByNumericValues } = state;
 
   useEffect(() => {
-    function filterByName() {
+    if (resetFilters || !state.haveFilter) {
+      setPlanets(data);
+      setResetFilters(false);
+    }
+  }, [resetFilters, data, setResetFilters, state]);
+
+  useEffect(() => {
+    function applyFilterByName() {
       if (data.length !== 0) {
-        const result = data
-          .filter((planet) => (
-            planet.name.includes(name)));
-        setPlanets(result);
+        const newData = data.filter((planet) => planet.name.includes(name));
+        setPlanets(newData);
       }
     }
-    filterByName();
-  }, [name, data]);
+    applyFilterByName();
+  }, [data, name]);
 
   useEffect(() => {
-    function filterByNumericValues() {
-      switch (comparison) {
-      case 'maior que': {
-        const result = data
-          .filter((planet) => +planet[column] > value);
-        setPlanets(result);
-        setApplyNumericFilter(false);
-      } break;
-      case 'menor que': {
-        const result = data
-          .filter((planet) => +planet[column] < value);
-        setPlanets(result);
-        setApplyNumericFilter(false);
-      } break;
-      case 'igual a': {
-        const result = data
-          .filter((planet) => planet[column] === value);
-        setPlanets(result);
-        setApplyNumericFilter(false);
-      } break;
-      default: break;
-      }
+    function applyFilter() {
+      filterByNumericValues.forEach((filter) => {
+        switch (filter.comparison) {
+        case operators[0]: {
+          const newData = planets
+            .filter((planet) => +planet[filter.column] > filter.value);
+          setPlanets(newData);
+        } break;
+        case operators[1]: {
+          const newData = planets
+            .filter((planet) => +planet[filter.column] < filter.value);
+          setPlanets(newData);
+        } break;
+        case operators[2]: {
+          const newData = planets
+            .filter((planet) => planet[filter.column] === filter.value);
+          setPlanets(newData);
+        } break;
+        default: break;
+        }
+      });
     }
-    if (applyNumericFilter) filterByNumericValues();
-  }, [column, value, comparison, data, applyNumericFilter, setApplyNumericFilter]);
+
+    if (applyNumericFilter) {
+      applyFilter();
+      dispatch(applyNumericFilterAction());
+    }
+  }, [
+    planets,
+    applyNumericFilter,
+    dispatch,
+    filterByNumericValues,
+  ]);
 
   return (
     <table style={ { border: '2px solid black' } }>
@@ -71,16 +82,19 @@ export default function Table() {
       </thead>
       <tbody>
         {
-          planets.length && planets
+          planets
             .map((planet) => (
               <tr key={ planet.name }>
                 {
                   Object.values(planet)
                     .map((planetValue, index) => (
-                      <td key={ `planetValue=${index}` }>{planetValue}</td>
+                      <td key={ `planetValue=${index}` }>
+                        {planetValue}
+                      </td>
                     ))
                 }
-              </tr>))
+              </tr>
+            ))
         }
       </tbody>
     </table>

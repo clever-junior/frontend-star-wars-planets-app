@@ -27,3 +27,10 @@ export const operators = [
   'menor que',
   'igual a',
 ];
+
+export const initialFilterValuesState = {
+  name: '',
+  column: 'population',
+  comparison: 'maior que',
+  value: 0,
+};

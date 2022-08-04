@@ -3,6 +3,7 @@ import { render, screen, act } from '@testing-library/react';
 import App from '../App';
 import { response as mockData } from './mocks/mockData';
 import userEvent from '@testing-library/user-event';
+import { columns } from '../helpers/constants';
 
 const mockFetch = () => {
   jest.spyOn(global, 'fetch')
@@ -27,17 +28,9 @@ describe('3 - Crie um filtro para valores numéricos na tabela: ', () => {
 
     expect(columnFilter).toBeInTheDocument();
 
-    const population = screen.getByText(/population/i);
-    const orbitalPeriod = screen.getByText(/orbital_period/i);
-    const diameter = screen.getByText(/diameter/i)
-    const rotationPeriod = screen.getByText(/rotation_period/i);
-    const surfaceWater = screen.getByText(/surface_water/i);
+    userEvent.click(columnFilter);
 
-    expect(population).toBeInTheDocument();
-    expect(orbitalPeriod).toBeInTheDocument();
-    expect(diameter).toBeInTheDocument();
-    expect(rotationPeriod).toBeInTheDocument();
-    expect(surfaceWater).toBeInTheDocument();
+    columns.forEach(column => expect(screen.getByText(column)).toBeInTheDocument());
   });
 
   test('Testa se renderiza o select de comparação e suas opções', () => {
@@ -58,8 +51,6 @@ describe('3 - Crie um filtro para valores numéricos na tabela: ', () => {
     const inputNumbers = screen.getByTestId('value-filter');
 
     expect(inputNumbers).toBeInTheDocument;
-
-    expect(typeof inputNumbers.type).toBe('number');
   });
 
   test('Testa se existe um botão para adicionar a filtragem', () => {
@@ -95,5 +86,28 @@ describe('3 - Crie um filtro para valores numéricos na tabela: ', () => {
     expect(planetNaboo).toBeInTheDocument();
     expect(planetTatooine).toBeInTheDocument();
     expect(planetYavinIV).toBeInTheDocument();
+  });
+
+  test('Testa se o filtro "menor que" funciona', () => {
+    const filterButton = screen.getByTestId('button-filter');
+    const inputNumbers = screen.getByTestId('value-filter');
+    const comparisonFilter = screen.getByTestId('comparison-filter');
+
+    userEvent.type(inputNumbers, 400);
+    comparisonFilter.innerText = /menor que/i;
+
+    userEvent.click(filterButton);
+
+    const planetAlderaan = screen.getByRole('cell', { name: /alderaan/i });
+    const planetCoruscant = screen.getByRole('cell', { name: /coruscant/i });
+    const planetNaboo = screen.getByRole('cell', { name: /Naboo/i });
+    const planetTatooine = screen.getByRole('cell', { name: /Tatooine/i });
+    const planetDagobah = screen.getByRole('cell', { name: /dagobah/i})
+
+    expect(planetDagobah).toBeInTheDocument();
+    expect(planetCoruscant).toBeInTheDocument();
+    expect(planetAlderaan).toBeInTheDocument();
+    expect(planetNaboo).toBeInTheDocument();
+    expect(planetTatooine).toBeInTheDocument();
   });
 });

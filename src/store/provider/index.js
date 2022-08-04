@@ -1,55 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import PropTypes from 'prop-types';
 import AppContext from '../context';
+import filtersReducer, { initialState } from '../reducers/filtersReducer';
 import fetchPlanets from '../../services/api';
 
 export default function Provider({ children }) {
   const [data, setData] = useState([]);
   const [name, setName] = useState('');
-  const [column, setColumn] = useState('population');
-  const [comparison, setComparison] = useState('maior que');
-  const [value, setValue] = useState(0);
-  const [applyNumericFilter, setApplyNumericFilter] = useState(false);
+  const [resetFilters, setResetFilters] = useState(false);
+  const [state, dispatch] = useReducer(filtersReducer, initialState);
 
   useEffect(() => {
     async function getApiData() {
       const apiData = await fetchPlanets();
       const dataResults = apiData.results;
-
       dataResults.forEach((planet) => delete planet.residents);
-
       setData(dataResults);
     }
     getApiData();
   }, []);
 
-  const onFilterBtnClick = () => setApplyNumericFilter(!applyNumericFilter);
-
-  const contextValue = {
+  const contextValues = {
     data,
-    filters: {
-      filterByName: {
-        name,
-        setName,
-      },
-      filterByNumericValues: [
-        {
-          column,
-          setColumn,
-          comparison,
-          setComparison,
-          value,
-          setValue,
-        },
-      ],
-      applyNumericFilter,
-      setApplyNumericFilter,
-      onFilterBtnClick,
+    resetFilters,
+    filterByName: {
+      name,
+    },
+    state,
+    setters: {
+      setName,
+      setResetFilters,
+      dispatch,
     },
   };
 
   return (
-    <AppContext.Provider value={ contextValue }>
+    <AppContext.Provider value={ contextValues }>
       { children }
     </AppContext.Provider>
   );

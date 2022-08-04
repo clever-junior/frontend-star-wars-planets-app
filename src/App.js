@@ -1,12 +1,12 @@
 import React from 'react';
-import Filters from './components/Filters';
+import Inputs from './components/Inputs';
 import Table from './components/Table';
 import Provider from './store/provider';
 
 function App() {
   return (
     <Provider>
-      <Filters />
+      <Inputs />
       <Table />
     </Provider>
   );
