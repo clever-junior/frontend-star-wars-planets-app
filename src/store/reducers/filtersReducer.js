@@ -16,14 +16,14 @@ export const initialState = {
       value: '0',
     },
   ],
-  applyNumericFilter: false,
+  applyFilter: false,
   applyResetFilter: false,
   haveFilter: false,
 };
 
 const filtersReducer = (state = initialState, action) => {
   const {
-    filterByNumericValues, applyNumericFilter, haveFilter, applyResetFilter,
+    filterByNumericValues, applyFilter, haveFilter, applyResetFilter,
   } = state;
   switch (action.type) {
   case FILTER_BY_NUMERIC_VALUES:
@@ -47,7 +47,7 @@ const filtersReducer = (state = initialState, action) => {
     };
   case APPLY_NUMERIC_FILTER:
     return {
-      ...state, applyNumericFilter: !applyNumericFilter,
+      ...state, applyFilter: !applyFilter,
     };
   case APPLY_RESET_FILTERS:
     return {

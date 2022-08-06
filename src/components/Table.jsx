@@ -1,71 +1,29 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { headers, operators } from '../helpers/constants';
-import { applyNumericFilterAction } from '../store/actions';
+import React, { useContext } from 'react';
+import { headers } from '../helpers/constants';
 import AppContext from '../store/context';
+import {
+  applyNameFilter,
+  applyNumericFilter,
+} from '../helpers/filters';
 
 export default function Table() {
-  const [planets, setPlanets] = useState([]);
   const {
     data,
     state,
     resetFilters,
-    setters: { dispatch, setResetFilters },
+    setters: { setResetFilters },
     filterByName: { name },
   } = useContext(AppContext);
 
-  const { applyNumericFilter, filterByNumericValues } = state;
+  const { filterByNumericValues: numericValues } = state;
 
-  useEffect(() => {
-    if (resetFilters || !state.haveFilter) {
-      setPlanets(data);
-      setResetFilters(false);
-    }
-  }, [resetFilters, data, setResetFilters, state]);
+  const newData = state.haveFilter
+    ? applyNumericFilter(data, numericValues)
+    : applyNameFilter(data, name);
 
-  useEffect(() => {
-    function applyFilterByName() {
-      if (data.length !== 0) {
-        const newData = data.filter((planet) => planet.name.includes(name));
-        setPlanets(newData);
-      }
-    }
-    applyFilterByName();
-  }, [data, name]);
-
-  useEffect(() => {
-    function applyFilter() {
-      filterByNumericValues.forEach((filter) => {
-        switch (filter.comparison) {
-        case operators[0]: {
-          const newData = planets
-            .filter((planet) => +planet[filter.column] > filter.value);
-          setPlanets(newData);
-        } break;
-        case operators[1]: {
-          const newData = planets
-            .filter((planet) => +planet[filter.column] < filter.value);
-          setPlanets(newData);
-        } break;
-        case operators[2]: {
-          const newData = planets
-            .filter((planet) => planet[filter.column] === filter.value);
-          setPlanets(newData);
-        } break;
-        default: break;
-        }
-      });
-    }
-
-    if (applyNumericFilter) {
-      applyFilter();
-      dispatch(applyNumericFilterAction());
-    }
-  }, [
-    planets,
-    applyNumericFilter,
-    dispatch,
-    filterByNumericValues,
-  ]);
+  if (state.haveFilter || resetFilters) {
+    setResetFilters(false);
+  }
 
   return (
     <table style={ { border: '2px solid black' } }>
@@ -82,7 +40,7 @@ export default function Table() {
       </thead>
       <tbody>
         {
-          planets
+          newData
             .map((planet) => (
               <tr key={ planet.name }>
                 {

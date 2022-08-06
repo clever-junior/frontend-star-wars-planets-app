@@ -1,5 +1,4 @@
 import React, { useContext, useState } from 'react';
-import AppContext from '../store/context';
 import { columns, operators } from '../helpers/constants';
 import {
   addFilterAction,
@@ -7,9 +6,9 @@ import {
   applyResetFilterAction,
   filterByNumericValuesAction,
   haveFilterAction,
-  removeAllFiltersAction,
-  removeFilterAction,
+  removeAllFiltersAction, removeFilterAction,
 } from '../store/actions';
+import AppContext from '../store/context';
 
 export default function Inputs() {
   const [renderColumns, setRenderColumns] = useState(columns);
@@ -144,7 +143,7 @@ export default function Inputs() {
           <section>
             {
               state.filterByNumericValues.map((filters, index) => (
-                <div key={ `filter=${index}` }>
+                <div key={ `filter=${index}` } data-testid="filter">
                   <span>
                     {`${filters.column} ${filters.comparison} ${filters.value}`}
                   </span>
