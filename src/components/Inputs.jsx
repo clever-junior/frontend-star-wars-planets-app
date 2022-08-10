@@ -18,8 +18,9 @@ export default function Inputs() {
 
   const {
     state,
+    order,
     filterByName: { name },
-    setters: { setName, dispatch, setResetFilters },
+    setters: { setName, dispatch, setResetFilters, setOrder, setApplySort },
   } = useContext(AppContext);
 
   const onFilterBtnClick = () => {
@@ -135,6 +136,57 @@ export default function Inputs() {
           onClick={ onRemoveFiltersBtnClick }
         >
           REMOVER FILTROS
+        </button>
+
+        <label htmlFor="column-sort">
+          Colunas:
+          <select
+            id="column-sort"
+            data-testid="column-sort"
+            name="columnSort"
+            value={ order.column }
+            onChange={ ({ target: { value } }) => setOrder({ ...order, column: value }) }
+          >
+            {
+              renderColumns.map((columnSort, index) => (
+                <option key={ `columnSort=${index}` } value={ columnSort }>
+                  {columnSort}
+                </option>
+              ))
+            }
+          </select>
+        </label>
+
+        <label htmlFor="column-sort-input-asc">
+          <input
+            name="column-sort-input"
+            type="radio"
+            id="column-sort-input-asc"
+            data-testid="column-sort-input-asc"
+            value="ASC"
+            onChange={ ({ target: { value } }) => setOrder({ ...order, sort: value }) }
+          />
+          Ascendente
+        </label>
+
+        <label htmlFor="column-sort-input-desc">
+          <input
+            type="radio"
+            id="column-sort-input-desc"
+            name="column-sort-input"
+            data-testid="column-sort-input-desc"
+            value="DESC"
+            onChange={ ({ target: { value } }) => setOrder({ ...order, sort: value }) }
+          />
+          Descendente
+        </label>
+
+        <button
+          type="button"
+          data-testid="column-sort-button"
+          onClick={ () => setApplySort(true) }
+        >
+          ORDENAR
         </button>
       </section>
 

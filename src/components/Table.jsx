@@ -1,29 +1,47 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { headers } from '../helpers/constants';
 import AppContext from '../store/context';
 import {
   applyNameFilter,
   applyNumericFilter,
+  applySortOrder,
 } from '../helpers/filters';
 
 export default function Table() {
+  const [newData, setNewData] = useState([]);
   const {
     data,
     state,
     resetFilters,
-    setters: { setResetFilters },
+    order,
+    applySort,
+    setters: { setResetFilters, setApplySort },
     filterByName: { name },
   } = useContext(AppContext);
 
   const { filterByNumericValues: numericValues } = state;
 
-  const newData = state.haveFilter
-    ? applyNumericFilter(data, numericValues)
-    : applyNameFilter(data, name);
-
   if (state.haveFilter || resetFilters) {
     setResetFilters(false);
   }
+
+  useEffect(() => {
+    setNewData(state.haveFilter
+      ? applyNumericFilter(data, numericValues)
+      : applyNameFilter(data, name, applySort, order));
+
+    if (applySort) {
+      setNewData(applySortOrder(data, order));
+    }
+  }, [
+    applySort,
+    state.haveFilter,
+    data,
+    name,
+    order,
+    numericValues,
+    setApplySort,
+  ]);
 
   return (
     <table style={ { border: '2px solid black' } }>
@@ -42,7 +60,7 @@ export default function Table() {
         {
           newData
             .map((planet) => (
-              <tr key={ planet.name }>
+              <tr key={ planet.name } data-testid="planet-name">
                 {
                   Object.values(planet)
                     .map((planetValue, index) => (

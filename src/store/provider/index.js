@@ -7,15 +7,22 @@ import fetchPlanets from '../../services/api';
 export default function Provider({ children }) {
   const [data, setData] = useState([]);
   const [name, setName] = useState('');
+  const [order, setOrder] = useState({
+    column: 'population',
+    sort: 'ASC',
+  });
+  const [applySort, setApplySort] = useState(false);
   const [resetFilters, setResetFilters] = useState(false);
   const [state, dispatch] = useReducer(filtersReducer, initialState);
 
   useEffect(() => {
     async function getApiData() {
+      const subOne = -1;
       const apiData = await fetchPlanets();
       const dataResults = apiData.results;
       dataResults.forEach((planet) => delete planet.residents);
-      setData(dataResults);
+      const sorted = dataResults.sort((a, b) => (a.name > b.name ? 1 : subOne));
+      setData(sorted);
     }
     getApiData();
   }, []);
@@ -26,9 +33,13 @@ export default function Provider({ children }) {
     filterByName: {
       name,
     },
+    applySort,
     state,
+    order,
     setters: {
       setName,
+      setOrder,
+      setApplySort,
       setResetFilters,
       dispatch,
     },

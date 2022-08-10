@@ -17,7 +17,7 @@ describe('3 - Crie um filtro para valores numéricos na tabela: ', () => {
     mockFetch();
 
     await act(async () =>{
-    render(<App />)
+      render(<App />)
     } )
   });
 
@@ -61,53 +61,58 @@ describe('3 - Crie um filtro para valores numéricos na tabela: ', () => {
 
   test('Test se utiliza o botão de filtrar sem alterar os valores iniciais dos inputs de filtro', () => {
     const filterButton = screen.getByTestId('button-filter');
-    const inputNumbers = screen.getByTestId('value-filter');
-    const comparisonFilter = screen.getByTestId('comparison-filter');
-
-    userEvent.type(inputNumbers, 0);
-    comparisonFilter.innerText = /maior que/i;
+    const table = screen.getByRole('table');
 
     userEvent.click(filterButton);
 
-    const planetAlderaan = screen.getByRole('cell', { name: /alderaan/i });
-    const planetBespin = screen.getByRole('cell', { name: /bespin/i });
-    const planetCoruscant = screen.getByRole('cell', { name: /coruscant/i });
-    const planetEndor = screen.getByRole('cell', { name: /endor/i });
-    const planetKamino = screen.getByRole('cell', { name: /kamino/i });
-    const planetNaboo = screen.getByRole('cell', { name: /Naboo/i });
-    const planetTatooine = screen.getByRole('cell', { name: /Tatooine/i });
-    const planetYavinIV = screen.getByRole('cell', { name: /Yavin IV/i })
-
-    expect(planetAlderaan).toBeInTheDocument();
-    expect(planetBespin).toBeInTheDocument();
-    expect(planetCoruscant).toBeInTheDocument();
-    expect(planetEndor).toBeInTheDocument();
-    expect(planetKamino).toBeInTheDocument();
-    expect(planetNaboo).toBeInTheDocument();
-    expect(planetTatooine).toBeInTheDocument();
-    expect(planetYavinIV).toBeInTheDocument();
+    expect(table.rows.length).toBe(9);
   });
 
   test('Testa se o filtro "menor que" funciona', () => {
+    const table = screen.getByRole('table');
     const filterButton = screen.getByTestId('button-filter');
     const inputNumbers = screen.getByTestId('value-filter');
+    const columnFilter = screen.getByTestId('column-filter');
     const comparisonFilter = screen.getByTestId('comparison-filter');
 
-    userEvent.type(inputNumbers, 400);
-    comparisonFilter.innerText = /menor que/i;
+    inputNumbers.value = 40
+    columnFilter.value = 'surface_water';
+    comparisonFilter.value = 'menor que';
 
     userEvent.click(filterButton);
 
-    const planetAlderaan = screen.getByRole('cell', { name: /alderaan/i });
-    const planetCoruscant = screen.getByRole('cell', { name: /coruscant/i });
-    const planetNaboo = screen.getByRole('cell', { name: /Naboo/i });
-    const planetTatooine = screen.getByRole('cell', { name: /Tatooine/i });
-    const planetDagobah = screen.getByRole('cell', { name: /dagobah/i})
+    expect(table.rows.length).toBe(7);
+  });
 
-    expect(planetDagobah).toBeInTheDocument();
-    expect(planetCoruscant).toBeInTheDocument();
-    expect(planetAlderaan).toBeInTheDocument();
-    expect(planetNaboo).toBeInTheDocument();
-    expect(planetTatooine).toBeInTheDocument();
+  test('Testa se o filtro "maior que" funciona', () => {
+    const filterButton = screen.getByTestId('button-filter');
+    const inputNumbers = screen.getByTestId('value-filter');
+    const columnFilter = screen.getByTestId('column-filter');
+    const comparisonFilter = screen.getByTestId('comparison-filter');
+    const table = screen.getByRole('table');
+
+    inputNumbers.value = 8900
+    columnFilter.value = 'diameter';
+    comparisonFilter.value = 'maior que';
+
+    userEvent.click(filterButton);
+
+    expect(table.rows.length).toBe(8);
+  });
+
+  test('Testa se o filtro "igual a" funciona', () => {
+    const filterButton = screen.getByTestId('button-filter');
+    const inputNumbers = screen.getByTestId('value-filter');
+    const columnFilter = screen.getByTestId('column-filter');
+    const comparisonFilter = screen.getByTestId('comparison-filter');
+    const table = screen.getByRole('table');
+
+    inputNumbers.value = 200000
+    columnFilter.value = 'population';
+    comparisonFilter.value = 'igual a';
+
+    userEvent.click(filterButton);
+
+    expect(table.rows.length).toBe(2);
   });
 });
