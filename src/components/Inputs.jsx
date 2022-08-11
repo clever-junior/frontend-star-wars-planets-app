@@ -50,9 +50,9 @@ export default function Inputs() {
     dispatch(removeFilterAction(index));
     dispatch(applyResetFilterAction());
 
-    if (state.filterByNumericValues.length <= 1) {
-      dispatch(haveFilterAction());
-    }
+    // if (state.filterByNumericValues.length <= 1) {
+    //   dispatch(haveFilterAction());
+    // }
     setInputColumn(columns[0]);
   };
 

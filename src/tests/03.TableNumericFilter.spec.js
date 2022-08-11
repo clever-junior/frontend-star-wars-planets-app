@@ -28,10 +28,36 @@ describe('3 - Crie um filtro para valores numéricos na tabela: ', () => {
 
     expect(columnFilter).toBeInTheDocument();
 
-    userEvent.click(columnFilter);
-
-    columns.forEach(column => expect(screen.getByText(column)).toBeInTheDocument());
+    expect(columnFilter.options[0].value).toBe(columns[0]);
+    expect(columnFilter.options[1].value).toBe(columns[1]);
+    expect(columnFilter.options[2].value).toBe(columns[2]);
+    expect(columnFilter.options[3].value).toBe(columns[3]);
+    expect(columnFilter.options[4].value).toBe(columns[4]);
   });
+
+  it('', () => {
+    const comparisonFilter = screen.getByTestId('comparison-filter');
+
+    expect(comparisonFilter.options.length).toBe(3);
+
+    expect(screen.getByText(/operadores:/i)).toBeInTheDocument();
+    expect(comparisonFilter.options[0].value).toBe('maior que');
+    expect(comparisonFilter.options[1].value).toBe('menor que');
+    expect(comparisonFilter.options[2].value).toBe('igual a');
+
+    userEvent.selectOptions(comparisonFilter, 'maior que');
+
+    expect(comparisonFilter.value).toBe('maior que');
+
+    userEvent.selectOptions(comparisonFilter, 'menor que');
+
+    expect(comparisonFilter.value).toBe('menor que');
+
+    userEvent.selectOptions(comparisonFilter, 'igual a');
+
+    expect(comparisonFilter.value).toBe('igual a');
+  });
+
 
   test('Testa se renderiza o select de comparação e suas opções', () => {
     const comparisonFilter = screen.getByTestId('comparison-filter');
@@ -71,48 +97,24 @@ describe('3 - Crie um filtro para valores numéricos na tabela: ', () => {
   test('Testa se o filtro "menor que" funciona', () => {
     const table = screen.getByRole('table');
     const filterButton = screen.getByTestId('button-filter');
-    const inputNumbers = screen.getByTestId('value-filter');
-    const columnFilter = screen.getByTestId('column-filter');
     const comparisonFilter = screen.getByTestId('comparison-filter');
 
-    inputNumbers.value = 40
-    columnFilter.value = 'surface_water';
-    comparisonFilter.value = 'menor que';
+    userEvent.selectOptions(comparisonFilter, 'menor que');
 
     userEvent.click(filterButton);
 
-    expect(table.rows.length).toBe(7);
-  });
-
-  test('Testa se o filtro "maior que" funciona', () => {
-    const filterButton = screen.getByTestId('button-filter');
-    const inputNumbers = screen.getByTestId('value-filter');
-    const columnFilter = screen.getByTestId('column-filter');
-    const comparisonFilter = screen.getByTestId('comparison-filter');
-    const table = screen.getByRole('table');
-
-    inputNumbers.value = 8900
-    columnFilter.value = 'diameter';
-    comparisonFilter.value = 'maior que';
-
-    userEvent.click(filterButton);
-
-    expect(table.rows.length).toBe(8);
+    expect(table.rows.length).toBe(1);
   });
 
   test('Testa se o filtro "igual a" funciona', () => {
     const filterButton = screen.getByTestId('button-filter');
-    const inputNumbers = screen.getByTestId('value-filter');
-    const columnFilter = screen.getByTestId('column-filter');
     const comparisonFilter = screen.getByTestId('comparison-filter');
     const table = screen.getByRole('table');
 
-    inputNumbers.value = 200000
-    columnFilter.value = 'population';
-    comparisonFilter.value = 'igual a';
+    userEvent.selectOptions(comparisonFilter, 'igual a');
 
     userEvent.click(filterButton);
 
-    expect(table.rows.length).toBe(2);
+    expect(table.rows.length).toBe(1);
   });
 });
